@@ -94,7 +94,7 @@ use Data::Dumper;
 }
 
 use Android;
-#use IO::File; -- BROKEN IN SL4A!
+use IO::File;
 
 sub double_print {
 	my ($droid, $msg) = @_;
@@ -110,15 +110,15 @@ our $file_name = "/sdcard/sl4a/scripts/fullscreen.xml";
 
 double_print(undef, "Starting");
 
-open(my $uiIn, "<", $file_name) || die("Failed to open file '$file_name' for reading: ".$!);
+my $uiIn = IO::File->new($file_name, O_RDONLY) || die("Failed to open file '$file_name' for reading: ".$!);
 
 my $uiXml = "";
 
-while (read($uiIn, my $data, $single_read) != 0) {
+while ($uiIn->read(my $data, $single_read) != 0) {
 	$uiXml .= $data;
 }
 double_print(undef, "I have UI XML: $uiXml");
-close($uiIn);
+$uiIn->close();
 
 my $droid = Android->new();
 
